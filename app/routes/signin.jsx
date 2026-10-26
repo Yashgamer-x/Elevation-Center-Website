@@ -2,6 +2,22 @@ import { useState } from "react";
 import FormInput from "../components/FormInput";
 import PrimaryButton from "../components/PrimaryButton";
 
+function WelcomeHeading() {
+    return(
+        <h1 className="text-3xl font-bold text-[#0B2545]">
+            Welcome back
+        </h1>
+    );
+}
+
+function SignInParagraph() {
+    return(
+        <p className="mt-2 text-[#5D6B82]">
+            Sign in to your Elevation Center account.
+        </p>
+    );
+}
+
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -16,14 +32,9 @@ export default function SignIn() {
     return(
         <main className="flex min-h-screen items-center justify-center bg-[#F5F7FA] px-6">
             <section>
-                <h1 className="text-3xl font-bold text-[#0B2545]">
-                    Welcome back
-                </h1>
-
-                <p className="mt-2 text-[#5D6B82]">
-                    Sign in to your Elevation Center account.
-                </p>
-
+                <WelcomeHeading/>
+                <SignInParagraph/>
+                
                 <form onSubmit={handleSubmit} className="">
                     <FormInput 
                         label="Email Address"
