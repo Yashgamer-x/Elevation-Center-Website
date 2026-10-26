@@ -88,10 +88,12 @@ function AddressFooter() {
   );
 }
 
-export default function BrandPanel() {
+export default function BrandPanel({
+  className=""
+}) {
   return (
-    <aside className="flex flex-col bg-[#0B2545] px-6 py-6 text-[#FFFFFF] min-[901px]:px-[52px] min-[901px]:py-12 min-[901px]:max-w-[614px]">
-      <div className="flex items-center gap-3">
+    <aside className={`flex flex-col bg-[#0B2545] px-6 py-6 text-[#FFFFFF] min-[901px]:px-[52px] min-[901px]:py-12 min-[901px]:max-w-[614px] ${className}`}>
+      <div className="flex items-center gap-3 mb-13">
         <Logo/>
         <UniversityHeading/>
       </div>
