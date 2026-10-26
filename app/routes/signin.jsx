@@ -1,4 +1,18 @@
+import { useState } from "react";
+import FormInput from "../components/FormInput";
+import PrimaryButton from "../components/PrimaryButton";
+
 export default function SignIn() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        console.log("Email:", email);
+        console.log("Password entered:", password.length > 0);
+    }
+
     return(
         <main className="flex min-h-screen items-center justify-center bg-[#F5F7FA] px-6">
             <section>
@@ -6,9 +20,37 @@ export default function SignIn() {
                     Welcome back
                 </h1>
 
-                <p className="mt-2 text-[#5D5B82]">
+                <p className="mt-2 text-[#5D6B82]">
                     Sign in to your Elevation Center account.
                 </p>
+
+                <form onSubmit={handleSubmit} className="">
+                    <FormInput 
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        value={email}
+                        onChange={(event) => setEmail(event.target.value)}
+                        placeholder="you@email.com"
+                        autoComplete="email"
+                        required
+                    />
+
+                    <FormInput
+                        label="Password"
+                        name="password"
+                        type="password"
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        placeholder="Enter your password"
+                        autoComplete="current-password"
+                        required
+                    />
+
+                    <PrimaryButton type="submit" className="mt-2 w-full">
+                        Sign in
+                    </PrimaryButton>
+                </form>
             </section>
         </main>
     );
