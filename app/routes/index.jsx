@@ -1,4 +1,5 @@
 import BrandPanel from "../components/BrandPanel";
+import SignIn from "./signin";
 
 export default function Home() {
     return(
@@ -8,7 +9,7 @@ export default function Home() {
             <section className="flex min-[901px]:flex-20 justify-center px-6 py-14 min-[901px]:px-6">
                 <div className="w-full">
                     <p className="text-[#5D6B82]">
-                    The sign-in form will go here next.
+                        <SignIn/>
                     </p>
                 </div>
             </section>

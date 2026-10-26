@@ -38,7 +38,7 @@ function UniversityHeading() {
 
 function Motto() {
   return(
-    <h1 className="mt-14 hidden font-serif text-[34px] font-normal leading-tight min-[901px]:mb-[18px] min-[901px]:mt-auto min-[901px]:block">
+    <h1 className="hidden font-serif pt-14 text-[34px] font-normal leading-tight min-[901px]:mb-4.5 min-[901px]:block">
       Elevating talent, technology, and innovation.
     </h1>
   );
@@ -46,7 +46,7 @@ function Motto() {
 
 function JoinNetworkDescription() {
   return(
-    <p className="mb-9 hidden max-w-[400px] text-[#FFFFFF]/75 min-[901px]:block">
+    <p className="mb-9 hidden max-w-100 text-[#FFFFFF]/75 min-[901px]:block">
       Join a network of manufacturers, educators, and students connected
       through mentorship, introductions, and real-world collaboration.
     </p>
@@ -64,7 +64,7 @@ function ElevateBenefitList() {
   const mappedList = list.map(([title, description]) => (
         <li
           key={title}
-          className="flex justify-between gap-4 border-b border-[#FFFFFF]/15 py-[13px] text-sm"
+          className="flex justify-between gap-4 border-b border-[#FFFFFF]/15 py-3.25 text-sm"
         >
           <strong>{title}</strong>
           <span className="text-right text-[#FFFFFF]/60">
@@ -82,9 +82,9 @@ function ElevateBenefitList() {
 
 function AddressFooter() {
   return(
-    <footer className="hidden text-[12.5px] text-[#FFFFFF]/55 min-[901px]:block">
+    <div className="hidden text-[12.5px] text-[#FFFFFF]/55 min-[901px]:block">
       300 Boston Post Road, West Haven, CT 06516
-    </footer>
+    </div>
   );
 }
 
@@ -92,15 +92,15 @@ export default function BrandPanel({
   className=""
 }) {
   return (
-    <aside className={`flex flex-col bg-[#0B2545] px-6 py-6 text-[#FFFFFF] min-[901px]:px-[52px] min-[901px]:py-12 min-[901px]:max-w-[614px] ${className}`}>
-      <div className="flex items-center gap-3 mb-13">
+    <aside className={`flex flex-col bg-[#0B2545] px-6 py-6 text-[#FFFFFF] min-[901px]:px-13 min-[901px]:py-12 min-[901px]:max-w-153.5 ${className}`}>
+      <div className="flex items-center gap-3">
         <Logo/>
         <UniversityHeading/>
       </div>
-        <Motto/>
-        <JoinNetworkDescription/>
-        <ElevateBenefitList/>
-        <AddressFooter/>
+      <Motto/>
+      <JoinNetworkDescription/>
+      <ElevateBenefitList/>
+      <AddressFooter/>
     </aside>
   );
 }
