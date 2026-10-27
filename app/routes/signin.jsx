@@ -149,9 +149,37 @@ function SignIn() {
     );
 }
 
+function Stepper({
+    steps=[],
+    activeStep,
+    className=""
+}) {
+    
+    return(
+        <ol className={`flex list-none gap-1.5 ${className}`}>
+            {
+                steps.map((step)=> (
+                    <li 
+                        key={step}
+                        className={`flex-1 text-[12px] font-semibold pt-2 border-t-3 border-solid 
+                        ${activeStep === step? "text-[#0B2545] border-[#e8a200]": "border-[#D9DFE9] text-[#5D6B82]"}`}
+                    >
+                        {step}
+                    </li>
+                ))
+            }
+        </ol>
+    );
+}
+
 function Join() {
+    const [activeStep, setActiveStep] = useState("Tier");
+    const steps = ["Tier", "Details", "Options", "Confirm"];
+
+
     return(
         <section className="w-full max-w-110">
+            <Stepper steps={steps} activeStep={activeStep} className="mb-7.5"/>
 
         </section>
     );
@@ -162,8 +190,8 @@ export default function Authentication() {
 
 
     return(
-        <div className="flex flex-col items-center justify-center w-110 max-w-110">
-            <div className="flex border-b min-w-full m-7.5" role="tablist">
+        <div className="flex flex-col items-center justify-start w-110 max-w-110">
+            <div className="flex border-b min-w-full mb-7.5" role="tablist">
                 <button 
                     role="tab"
                     aria-selected={selectedTab === "signin"}
