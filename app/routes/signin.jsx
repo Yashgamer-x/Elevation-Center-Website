@@ -132,7 +132,7 @@ function SignIn() {
     const onPasswordChange = (event) => setPassword(event.target.value);
 
     return(
-        <section className="w-full max-w-110">
+        <section className="w-full max-w-155">
             <WelcomeHeading/>
             <SignInParagraph/>
 
@@ -146,6 +146,84 @@ function SignIn() {
             </form>
             <JoinElevation/>
         </section>
+    );
+}
+
+function MembershipType({
+    title,
+    fee,
+    description,
+    className,
+    selectedTitle,
+    onClick,
+}) {
+    return(
+        <button className={`text-left border border-solid rounded-lg px-4.5 py-4 
+            border-t-[3px] hover:cursor-pointer
+            ${
+                selectedTitle === title? 
+                "border-[#0b2545] border-t-[#e8a200] bg-[#f8fafd]": 
+                "border-[#b9c3d3] border-t-[#b9c3d3]"
+            }
+            ${className}`}
+            onClick={()=>onClick(title)}
+        >
+            <div className="text-[#0b2545] font-semibold text-[15px]">{title}</div>
+            <div className="text-[26px] leading-[1.2] font-normal font-[Georgia,serif] text-[#0b2545] my-2.5 mb-0.5">{fee}</div>
+            <div className="text-[12.5px] text-[#5d6b82]">{description}</div>
+        </button>
+    );
+}
+
+function ChooseMembershipStep({}) {
+    const tiers = [
+        {
+            title: "Ambassador",
+            fee: "$50",
+            description: "12-month membership"
+        },
+        {
+            title: "Ambassador Plus",
+            fee: "$75",
+            description: "12-month membership"
+        },
+        {
+            title: "Student",
+            fee: "Free",
+            description: "School email required"
+        }
+    ];
+
+    const [selectedTitle, setSelectedTab] = useState("Student");
+    const memberShipTypeSelect = (title) => {
+        console.log(`${title} member was selected`)
+        setSelectedTab(title)
+    };
+
+    return(
+        <div>
+            <h2 className="mb-1.5 text-[28px] leading-[1.2] font-normal font-[Georgia,'Times_New_Roman',serif] text-[#0b2545]">
+                Choose your membership
+            </h2>
+            <p className="mb-12 text-[#5d6b82]">
+                Select the tier that fits you. Memberships run for 12 months from the date you join.
+            </p>
+            <div aria-label="Membership tier" className="flex gap-1.5">
+                {
+                    tiers.map((tier) =>(
+                        <MembershipType
+                            key={tier.title}
+                            title={tier.title} 
+                            fee={tier.fee} 
+                            description={tier.description}
+                            selectedTitle={selectedTitle}
+                            onClick={memberShipTypeSelect}
+                            className={`flex-1`}
+                        />
+                    ))
+                }
+            </div>
+        </div>
     );
 }
 
@@ -178,9 +256,14 @@ function Join() {
 
 
     return(
-        <section className="w-full max-w-110">
+        <section className="w-full max-w-155">
             <Stepper steps={steps} activeStep={activeStep} className="mb-7.5"/>
-
+            <ChooseMembershipStep/>
+            <div className="flex justify-between mt-7.5 gap-3">
+                <button className="bg-[#0b2545] text-white px-6.5 py-3 rounded-md cursor-pointer ml-auto">
+                    Continue
+                </button>
+            </div>
         </section>
     );
 }
@@ -190,12 +273,15 @@ export default function Authentication() {
 
 
     return(
-        <div className="flex flex-col items-center justify-start w-110 max-w-110">
+        <div className="flex flex-col items-center justify-start w-155 max-w-155">
             <div className="flex border-b min-w-full mb-7.5" role="tablist">
                 <button 
                     role="tab"
                     aria-selected={selectedTab === "signin"}
-                    onClick={()=> setSelectedTab("signin")}
+                    onClick={()=> {
+                        console.log("sigin selected");
+                        setSelectedTab("signin")
+                    }}
                     className= "flex-1 p-3.5 border-b-2 border-solid -m-px border-b-transparent aria-selected:border-b-[#E8A200]"
                 >
                     Sign in
@@ -204,7 +290,7 @@ export default function Authentication() {
                     role="tab"
                     aria-selected={selectedTab === "join"}
                     onClick={()=> {
-                        console.log("Join Selected");
+                        console.log("join selected");
                         setSelectedTab("join")
                     }}
                     className="flex-1 p-3.5 border-b-2 border-solid -m-px border-b-transparent aria-selected:border-b-[#E8A200]"
