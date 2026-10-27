@@ -1,5 +1,10 @@
 import { useState } from "react";
 import PrimaryButton from "../components/PrimaryButton";
+import DetailsStep from "../components/join/DetailsStep";
+import OptionsStep from "../components/join/OptionsStep";
+import ConfirmStep from "../components/join/ConfirmStep";
+import validateJoinStep from "../utils/validateJoinStep";
+import { MENTOR_OPTIONS } from "../data/joinOptions";
 
 function WelcomeHeading() {
     return(
@@ -175,7 +180,7 @@ function MembershipType({
     );
 }
 
-function ChooseMembershipStep({}) {
+function ChooseMembershipStep({ selectedTitle, onSelect }) {
     const tiers = [
         {
             title: "Ambassador",
@@ -194,10 +199,9 @@ function ChooseMembershipStep({}) {
         }
     ];
 
-    const [selectedTitle, setSelectedTab] = useState("Student");
     const memberShipTypeSelect = (title) => {
         console.log(`${title} member was selected`)
-        setSelectedTab(title)
+        onSelect(title)
     };
 
     return(
@@ -250,18 +254,120 @@ function Stepper({
     );
 }
 
+const initialFormData = {
+    tier: "Student",
+    firstName: "",
+    lastName: "",
+    email: "",
+    memberType: "",
+    organization: "",
+    password: "",
+    wantsMentor: false,
+    options: [],
+    consent: false,
+    listing: false,
+};
+
 function Join() {
     const [activeStep, setActiveStep] = useState("Tier");
     const steps = ["Tier", "Details", "Options", "Confirm"];
+    const [formData, setFormData] = useState(initialFormData);
+    const [error, setError] = useState("");
 
+    const stepIndex = steps.indexOf(activeStep);
+    const isLastStep = stepIndex === steps.length - 1;
+
+    function updateField(name, value) {
+        setFormData({ ...formData, [name]: value });
+    }
+
+    const onInputChange = (event) => updateField(event.target.name, event.target.value);
+
+    function selectTier(tier) {
+        if (tier === formData.tier) return;
+
+        // Each tier has different options, so start the options over.
+        setFormData({ ...formData, tier, options: [], wantsMentor: false, listing: false });
+    }
+
+    function toggleOption(option) {
+        const options = formData.options.includes(option)
+            ? formData.options.filter((item) => item !== option)
+            : [...formData.options, option];
+
+        updateField("options", options);
+    }
+
+    function changeWantsMentor(wantsMentor) {
+        // Hiding the mentee list also clears what was picked in it
+        // (the options shared with the mentor list stay).
+        const options = wantsMentor
+            ? formData.options
+            : formData.options.filter((option) => MENTOR_OPTIONS.includes(option));
+
+        setFormData({ ...formData, wantsMentor, options });
+    }
+
+    function goToStep(index) {
+        setError("");
+        setActiveStep(steps[index]);
+    }
+
+    function handleContinue() {
+        const message = validateJoinStep(activeStep, formData);
+
+        if (message) {
+            setError(message);
+            return;
+        }
+        goToStep(stepIndex + 1);
+    }
+
+    function handleSubmit() {
+        // Nothing is sent anywhere yet. This is where the form data will go.
+        console.log("Join form:", { ...formData, password: "(hidden)" });
+    }
 
     return(
         <section className="w-full max-w-155">
             <Stepper steps={steps} activeStep={activeStep} className="mb-7.5"/>
-            <ChooseMembershipStep/>
+
+            {activeStep === "Tier" && (
+                <ChooseMembershipStep selectedTitle={formData.tier} onSelect={selectTier}/>
+            )}
+            {activeStep === "Details" && (
+                <DetailsStep formData={formData} onChange={onInputChange}/>
+            )}
+            {activeStep === "Options" && (
+                <OptionsStep
+                    formData={formData}
+                    onToggleOption={toggleOption}
+                    onFieldChange={updateField}
+                    onWantsMentorChange={changeWantsMentor}
+                />
+            )}
+            {activeStep === "Confirm" && (
+                <ConfirmStep formData={formData}/>
+            )}
+
+            {error && (
+                <p role="alert" className="mt-4 text-sm text-[#b3261e]">{error}</p>
+            )}
+
             <div className="flex justify-between mt-7.5 gap-3">
-                <button className="bg-[#0b2545] text-white px-6.5 py-3 rounded-md cursor-pointer ml-auto">
-                    Continue
+                {stepIndex > 0 && (
+                    <button
+                        onClick={() => goToStep(stepIndex - 1)}
+                        className="border border-[#0b2545] bg-white text-[#0b2545] px-6.5 py-3 rounded-md cursor-pointer"
+                    >
+                        Back
+                    </button>
+                )}
+                <button
+                    onClick={isLastStep ? handleSubmit : handleContinue}
+                    className="bg-[#0b2545] text-white px-6.5 py-3 rounded-md cursor-pointer ml-auto"
+                >
+                    {isLastStep ? "Submit registration" : "Continue"}
                 </button>
             </div>
         </section>
