@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import PrimaryButton from "../components/PrimaryButton";
 import DetailsStep from "../components/join/DetailsStep";
 import OptionsStep from "../components/join/OptionsStep";
 import ConfirmStep from "../components/join/ConfirmStep";
 import validateJoinStep from "../utils/validateJoinStep";
+import { signIn, signUp } from "../auth/session";
 import { MENTOR_OPTIONS } from "../data/joinOptions";
 
 function WelcomeHeading() {
@@ -114,23 +116,41 @@ function PasswordFormInput({
     );
 }
 
-function JoinElevation() {
+function JoinElevation({ onJoin }) {
     return(
         <p className="mt-5.5 text-center text-[#5D6B82] text-[13px]">
-            Not a member yet? <a href="" className="text-[#13386B] font-semibold decoration-solid hover:underline">Join the Elevation Center</a>
+            Not a member yet?{" "}
+            <button
+                type="button"
+                onClick={onJoin}
+                className="cursor-pointer text-[#13386B] font-semibold decoration-solid hover:underline"
+            >
+                Join the Elevation Center
+            </button>
         </p>
     );
 }
 
-function SignIn() {
+function SignIn({ onJoin }) {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
+        setError("");
+        setLoading(true);
 
-        console.log("Email:", email);
-        console.log("Password entered:", password.length > 0);
+        try {
+            await signIn(email, password);
+            navigate("/dashboard");
+        } catch (apiError) {
+            setError(apiError.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const onEmailChange = (event) => setEmail(event.target.value);
@@ -145,11 +165,15 @@ function SignIn() {
                 <EmailFormInput email={email} onChange={onEmailChange} required/>
                 <PasswordFormInput password={password} onChange={onPasswordChange} required/>
 
-                <PrimaryButton type="submit" className="mt-2 w-full">
-                    Sign in
+                {error && (
+                    <p role="alert" className="text-sm text-[#b3261e]">{error}</p>
+                )}
+
+                <PrimaryButton type="submit" disabled={loading} className="mt-2 w-full">
+                    {loading ? "Signing in..." : "Sign in"}
                 </PrimaryButton>
             </form>
-            <JoinElevation/>
+            <JoinElevation onJoin={onJoin}/>
         </section>
     );
 }
@@ -273,6 +297,8 @@ function Join() {
     const steps = ["Tier", "Details", "Options", "Confirm"];
     const [formData, setFormData] = useState(initialFormData);
     const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     const stepIndex = steps.indexOf(activeStep);
     const isLastStep = stepIndex === steps.length - 1;
@@ -323,10 +349,24 @@ function Join() {
         goToStep(stepIndex + 1);
     }
 
-    function handleSubmit() {
-        // Nothing is sent anywhere yet. This is where the form data will go.
-        console.log("Join form:", { ...formData, password: "(hidden)" });
+    async function handleSubmit() {
+        setError("");
+        setSubmitting(true);
+
+        try {
+            // The API only takes the name, email, and password for now. The rest of
+            // formData (tier, options, ...) stays in this form until it has fields for it.
+            await signUp(formData);
+            navigate("/dashboard");
+        } catch (apiError) {
+            setError(apiError.message);
+        } finally {
+            setSubmitting(false);
+        }
     }
+
+    let nextLabel = "Continue";
+    if (isLastStep) nextLabel = submitting ? "Submitting..." : "Submit registration";
 
     return(
         <section className="w-full max-w-155">
@@ -358,16 +398,18 @@ function Join() {
                 {stepIndex > 0 && (
                     <button
                         onClick={() => goToStep(stepIndex - 1)}
-                        className="border border-[#0b2545] bg-white text-[#0b2545] px-6.5 py-3 rounded-md cursor-pointer"
+                        disabled={submitting}
+                        className="border border-[#0b2545] bg-white text-[#0b2545] px-6.5 py-3 rounded-md cursor-pointer disabled:opacity-50"
                     >
                         Back
                     </button>
                 )}
                 <button
                     onClick={isLastStep ? handleSubmit : handleContinue}
-                    className="bg-[#0b2545] text-white px-6.5 py-3 rounded-md cursor-pointer ml-auto"
+                    disabled={submitting}
+                    className="bg-[#0b2545] text-white px-6.5 py-3 rounded-md cursor-pointer ml-auto disabled:opacity-50"
                 >
-                    {isLastStep ? "Submit registration" : "Continue"}
+                    {nextLabel}
                 </button>
             </div>
         </section>
@@ -404,7 +446,7 @@ export default function Authentication() {
                     Join
                 </button>
             </div>
-            {selectedTab === "signin" ? <SignIn /> : <Join />}
+            {selectedTab === "signin" ? <SignIn onJoin={() => setSelectedTab("join")} /> : <Join />}
         </div>
     );
 }

@@ -63,15 +63,20 @@ export default function DetailsStep({ formData, onChange }) {
                     autoComplete="organization"
                 />
 
-                <FormInput
-                    label="Password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={onChange}
-                    placeholder="At least 10 characters"
-                    autoComplete="new-password"
-                />
+                <div className="flex flex-col gap-1.5">
+                    <FormInput
+                        label="Password"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={onChange}
+                        placeholder="At least 8 characters"
+                        autoComplete="new-password"
+                    />
+                    <p className="text-[12.5px] text-[#5D6B82]">
+                        Use an uppercase letter, a lowercase letter, a number, and one of _ @ $ ! % * ? & -
+                    </p>
+                </div>
             </div>
         </div>
     );
