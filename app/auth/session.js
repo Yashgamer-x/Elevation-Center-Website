@@ -2,11 +2,9 @@ import { login, refreshToken, register } from "../api/authApi";
 import { ApiError, request } from "../api/request";
 import {
     clearTokens,
-    getProfile,
     getTokens,
     isTokenExpired,
     readTokenClaims,
-    saveProfile,
     saveTokens,
 } from "./tokenStorage";
 
@@ -16,7 +14,7 @@ export async function signIn(email, password) {
 }
 
 export async function signUp({ firstName, lastName, email, password }) {
-    const profile = await register({
+    await register({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         email: email.trim(),
@@ -32,31 +30,22 @@ export async function signUp({ firstName, lastName, email, password }) {
             error.status
         );
     }
-
-    saveProfile({
-        firstName: profile?.firstName ?? firstName.trim(),
-        lastName: profile?.lastName ?? lastName.trim(),
-        email: profile?.email ?? email.trim(),
-    });
 }
 
-// Who is signed in, read from the access token (plus the name saved at sign up).
-// Returns null when nobody is signed in.
-export function getCurrentUser() {
-    const tokens = getTokens();
-    const claims = tokens?.accessToken ? readTokenClaims(tokens.accessToken) : null;
-    if (!claims) return null;
+// The signed in user's own information: GET /api/v1/users/me.
+// Returns { id, firstName, lastName, email, enabled, accountNonLocked, roles, createdAt, updatedAt }.
+export function fetchCurrentUser() {
+    return authRequest("/api/v1/users/me");
+}
 
-    const profile = getProfile();
-    const knownProfile = profile?.email?.toLowerCase() === claims.sub?.toLowerCase() ? profile : null;
+// When the current access token was issued and when it runs out, read from the token.
+export function getSessionTimes() {
+    const accessToken = getTokens()?.accessToken;
+    const claims = accessToken ? readTokenClaims(accessToken) : null;
 
     return {
-        email: claims.sub,
-        roles: claims.roles ?? [],
-        firstName: knownProfile?.firstName ?? null,
-        lastName: knownProfile?.lastName ?? null,
-        signedInAt: claims.iat ? new Date(claims.iat * 1000) : null,
-        expiresAt: claims.exp ? new Date(claims.exp * 1000) : null,
+        signedInAt: claims?.iat ? new Date(claims.iat * 1000) : null,
+        expiresAt: claims?.exp ? new Date(claims.exp * 1000) : null,
     };
 }
 

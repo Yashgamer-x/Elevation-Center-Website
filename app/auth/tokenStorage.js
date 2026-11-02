@@ -1,5 +1,4 @@
 const STORAGE_KEY = "elevation.tokens";
-const PROFILE_KEY = "elevation.profile";
 
 // Stored as { accessToken, refreshToken, tokenType }.
 export function getTokens() {
@@ -16,21 +15,6 @@ export function saveTokens(tokens) {
 
 export function clearTokens() {
     localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(PROFILE_KEY);
-}
-
-// The login response has no name, so the name given at sign up is kept here.
-// Stored as { firstName, lastName, email }.
-export function getProfile() {
-    try {
-        return JSON.parse(localStorage.getItem(PROFILE_KEY));
-    } catch {
-        return null;
-    }
-}
-
-export function saveProfile(profile) {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 }
 
 // The access token is a JWT, so its claims (sub, roles, iat, exp) can be read
