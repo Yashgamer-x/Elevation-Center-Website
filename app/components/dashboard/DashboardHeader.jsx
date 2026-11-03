@@ -1,19 +1,21 @@
-export default function DashboardHeader({ userEmail, onSignOut, signingOut = false }) {
+import { Link } from "react-router";
+import ProfileMenu from "./ProfileMenu";
+
+export default function DashboardHeader({ user, onSignOut, signingOut = false }) {
     return(
         <header className="flex items-center justify-between gap-4 bg-[#0B2545] px-6 py-4 text-white">
-            <div className="flex flex-col gap-1">
-                <span className="font-serif text-[15px] font-semibold leading-tight">
+            <Link to="/dashboard" className="flex flex-col gap-1 no-underline">
+                <span className="font-serif text-[15px] font-semibold leading-tight text-white">
                     The Elevation Center
                 </span>
                 <span className="text-xs uppercase tracking-[0.12em] text-white/65">
                     University of New Haven
                 </span>
-            </div>
+            </Link>
 
-            <div className="flex items-center gap-4">
-                {userEmail && (
-                    <span className="hidden text-sm text-white/80 sm:inline">{userEmail}</span>
-                )}
+            {user ? (
+                <ProfileMenu user={user} onSignOut={onSignOut} signingOut={signingOut}/>
+            ) : (
                 <button
                     onClick={onSignOut}
                     disabled={signingOut}
@@ -21,7 +23,7 @@ export default function DashboardHeader({ userEmail, onSignOut, signingOut = fal
                 >
                     {signingOut ? "Signing out..." : "Sign out"}
                 </button>
-            </div>
+            )}
         </header>
     );
 }

@@ -38,6 +38,14 @@ export function fetchCurrentUser() {
     return authRequest("/api/v1/users/me");
 }
 
+// Permanently deletes the signed in user's account: DELETE /api/v1/users/me.
+// The password confirms it. A wrong password is a 403, so it never looks like a lost session.
+export async function deleteAccount(password) {
+    await authRequest("/api/v1/users/me", { method: "DELETE", body: { password } });
+    // The server already deleted the user and their refresh tokens, so only this browser is left to clear.
+    clearTokens();
+}
+
 // When the current access token was issued and when it runs out, read from the token.
 export function getSessionTimes() {
     const accessToken = getTokens()?.accessToken;

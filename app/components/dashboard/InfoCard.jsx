@@ -1,8 +1,13 @@
-export default function InfoCard({ title, children }) {
+// A card of label and value rows. Give emptyText instead of rows when there is nothing to show yet.
+export default function InfoCard({ title, children, emptyText }) {
     return(
         <section className="rounded-lg border border-t-[3px] border-[#D9DFE9] border-t-[#E8A200] bg-white px-5 py-4.5">
             <h2 className="mb-3 text-[15px] font-semibold text-[#0B2545]">{title}</h2>
-            <dl className="divide-y divide-[#D9DFE9]">{children}</dl>
+            {emptyText ? (
+                <p className="text-sm text-[#5D6B82]">{emptyText}</p>
+            ) : (
+                <dl className="divide-y divide-[#D9DFE9]">{children}</dl>
+            )}
         </section>
     );
 }

@@ -6,6 +6,7 @@ import OptionsStep from "../components/join/OptionsStep";
 import ConfirmStep from "../components/join/ConfirmStep";
 import validateJoinStep from "../utils/validateJoinStep";
 import { signIn, signUp } from "../auth/session";
+import { saveJoinChoices } from "../auth/memberData";
 import { MENTOR_OPTIONS } from "../data/joinOptions";
 
 function WelcomeHeading() {
@@ -354,10 +355,17 @@ function Join() {
         setSubmitting(true);
 
         try {
-            // The API only takes the name, email, and password for now. The rest of
-            // formData (tier, options, ...) stays in this form until it has fields for it.
             await signUp(formData);
-            navigate("/dashboard");
+
+            // The account exists and is signed in now. If saving the tier and details fails, still open the
+            // dashboard and say so there, because submitting the form again would only hit "email already exists".
+            let joinError = "";
+            try {
+                await saveJoinChoices(formData);
+            } catch (saveError) {
+                joinError = saveError.message;
+            }
+            navigate("/dashboard", { state: joinError ? { joinError } : undefined });
         } catch (apiError) {
             setError(apiError.message);
         } finally {
